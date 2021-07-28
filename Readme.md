@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Alexander Gnetov](https://up.htmlacademy.ru/ecmascript/15/user/1519399).
-* Наставник: `Неизвестно`.
+* Наставник: [Кристина Жиделягина](https://htmlacademy.ru/profile/id575159).
 
 ---
 
