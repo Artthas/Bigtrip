@@ -12,6 +12,13 @@ import { createTripControlsNavigation } from './view/trip-controls-navigation.js
 import { createTripControlsFilters } from './view/trip-controls-filters.js';
 import { createTripEvents } from './view/trip-events.js';
 import { createTripEventsList } from './view/trip-events-list.js';
+import { generateTrip } from './mock/trip.js';
+
+const TRIP_COUNT = 15;
+
+const trips = new Array(TRIP_COUNT).fill().map(generateTrip);
+
+console.log(trips);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -50,7 +57,7 @@ render(tripEvents, createTripEventsList(), 'beforeend');
 const tripEventsList = document.querySelector('.trip-events__list');
 
 render(tripEventsList, createTripEdit(), 'beforeend');
-render(tripEventsList, createTripCreate(), 'beforeend');
+render(tripEventsList, createTripCreate(trips[0]), 'beforeend');
 render(tripEventsList, createTripPoint(), 'beforeend');
 render(tripEventsList, createTripPoint(), 'beforeend');
 render(tripEventsList, createTripPoint(), 'beforeend');
