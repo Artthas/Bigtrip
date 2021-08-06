@@ -7,51 +7,49 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+const getRandomIntegerEveryFive = (a, b) => {
+  const lower = Math.ceil(Math.min(a, b));
+  const upper = Math.floor(Math.max(a, b));
+
+  return Math.floor(lower + Math.random() * (upper - lower + 5));
+};
+
 const generateType = () => {
-  const types = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeng', 'Restaurant'];
+  const types = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
   const randomIndex = getRandomInteger(0, types.length - 1);
-  
+
   return types[randomIndex];
-}
+};
 
 const generateDestination = () => {
   const destinations = ['Amsterdam', 'Geneva', 'Chamonix'];
   const randomIndex = getRandomInteger(0, destinations.length - 1);
 
   return destinations[randomIndex];
-}
+};
 
 const generateOffer = (type) => {
-  const offers = {
-    'Taxi': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Bus': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Train': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Ship': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Drive': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Flight': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Check-in': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Sightseeng': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-    'Restaurant': [{'Add luggage': '50'}, {'Switch to comfort': '80'}, {'Add meal': '15'}, {'Choose seats': '5'}, {'Travel by train': '40'}],
-  }
-
-  let newOffers = [];
-
-  console.log(type);
-  console.log(offers[type]);
-  
-  for (let element of offers[type]) {
+  const isChecked = () => {
     if (getRandomInteger(0, 1)) {
-      newOffers.push(element);
-    } else {
-      continue;
+      return 'checked';
     }
-  }
+  };
 
-  console.log(newOffers);
+  const offers = {
+    'Taxi': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Bus': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Train': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Ship': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Drive': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Flight': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Check-in': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Sightseeing': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+    'Restaurant': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
+  };
 
-  return newOffers;
-}
+  return offers[type];
+};
 
 const generateDescription = () => {
   const descriptions = [
@@ -72,48 +70,97 @@ const generateDescription = () => {
   const newDescriptions = descriptions.slice();
 
   for (let i = 0; i < 5; i++) {
-    let index = getRandomInteger(0, newDescriptions.length - 1);
+    const index = getRandomInteger(0, newDescriptions.length - 1);
     description += newDescriptions[index];
     newDescriptions.splice(index, 1);
   }
 
   return description;
-}
+};
 
 const generatePhoto = () => {
   const photos = [];
 
-  for (let i = 0; i < getRandomInteger(1, 6); i++) {
+  for (let i = 0; i < getRandomInteger(3, 8); i++) {
     photos.push(`http://picsum.photos/248/152?r=${getRandomInteger(0, 20)}`);
   }
 
-  new Set(photos);
+  const uniqePhotos = new Set(photos);
 
-  return photos;
-}
+  return uniqePhotos;
+};
 
-const generateTime = (daysGap) => {
-  return dayjs().add(daysGap, 'day').toDate();
+const generateDate = (daysGap, hoursGap, minutesGap) => dayjs().add(daysGap, 'day').add(hoursGap, 'hour').add(minutesGap, 'minute').toDate();
+
+const generateDuration = (startDate, endDate) => {
+
+  const differenceInDays = parseInt((endDate - startDate) / 86400000, 10);
+  let differenceInHours = parseInt((endDate - startDate) / 3600000, 10);
+  const differenceInMinutes = parseInt((endDate - startDate) / 60000, 10) - differenceInHours * 60;
+  let difference = '';
+
+  if (differenceInDays > 0) {
+    differenceInHours = differenceInHours - differenceInDays * 24;
+  }
+
+  if (differenceInDays === 0) {
+    difference = `0${differenceInHours}H ${differenceInMinutes}M`;
+  } else if (differenceInHours === 0) {
+    difference = `0${differenceInDays}D 0${differenceInHours}H ${differenceInMinutes}M`;
+  } else if (differenceInMinutes < 10) {
+    difference = `0${differenceInDays}D 0${differenceInHours}H 0${differenceInMinutes}M`;
+  } else {
+    difference = `0${differenceInDays}D 0${differenceInHours}H ${differenceInMinutes}M`;
+  }
+
+  return difference;
+};
+
+const isFavorite = () => {
+  if (getRandomInteger(0, 1)) {
+    return 'event__favorite-btn--active';
+  } else {
+    return '';
+  }
+};
+
+const generatePrice = (offers) => {
+  let price = Number(getRandomInteger(1, 20));
+  price += '0';
+
+  for (const element of offers) {
+    if (element.isChecked === 'checked') {
+      price += Number(Object.values(element)[0]);
+    }
+  }
+
+  return price;
 };
 
 export const generateTrip = () => {
-  const daysGapStartTime = getRandomInteger(0, 7);
-  const daysGapEndTime = getRandomInteger(7, 14);
+  const hoursGapStart = getRandomInteger(3, 6);
+  const hoursGapEnd = getRandomInteger(7, 12);
+  const minutesGapStart = getRandomIntegerEveryFive(1, 60) ;
+  const minutesGapEnd = getRandomIntegerEveryFive(1, 60) ;
+  const daysGapStart = getRandomInteger(-7, 7);
+  const daysGapEnd = daysGapStart + getRandomInteger(0, 2);
 
   return {
     type: generateType(),
     destination: generateDestination(),
-    startTime: generateTime(daysGapStartTime),
-    endTime: generateTime(daysGapEndTime),
+    startDate: generateDate(daysGapStart, hoursGapStart, minutesGapStart),
+    endDate: generateDate(daysGapEnd, hoursGapEnd, minutesGapEnd),
     get duration() {
-      return daysGapEndTime - daysGapStartTime;
+      return generateDuration(this.startDate, this.endDate);
     },
-    price: getRandomInteger(15, 150),
+    get price() {
+      return generatePrice(this.offers);
+    },
     get offers() {
       return generateOffer(this.type);
     },
     description: generateDescription(),
-    isFavorite: true,
+    isFavorite: isFavorite(),
     photos: generatePhoto(),
-  }
+  };
 };
