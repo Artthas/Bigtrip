@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 
 export const createTripInfo = (trips) => {
-
   let minDate = trips[0].startDate;
   let maxDate = minDate;
   let total = 0;

@@ -125,8 +125,7 @@ const isFavorite = () => {
 };
 
 const generatePrice = (offers) => {
-  let price = Number(getRandomInteger(1, 20));
-  price += '0';
+  let price = getRandomIntegerEveryFive(5, 200);
 
   for (const element of offers) {
     if (element.isChecked === 'checked') {
