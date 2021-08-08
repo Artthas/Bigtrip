@@ -12,6 +12,11 @@ import { createTripControlsNavigation } from './view/trip-controls-navigation.js
 import { createTripControlsFilters } from './view/trip-controls-filters.js';
 import { createTripEvents } from './view/trip-events.js';
 import { createTripEventsList } from './view/trip-events-list.js';
+import { generateTrip } from './mock/trip.js';
+
+const TRIP_COUNT = 15;
+
+const trips = new Array(TRIP_COUNT).fill().map(generateTrip);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -35,7 +40,7 @@ render(tripControls, createTripControlsFilters(), 'afterbegin');
 const tripControlsNavigation = document.querySelector('.trip-controls__navigation');
 
 render(tripControlsNavigation, createTripTabs(), 'beforeend');
-render(tripMain, createTripInfo(), 'afterbegin');
+render(tripMain, createTripInfo(trips), 'afterbegin');
 
 const tripControlsFilters = document.querySelector('.trip-controls__filters');
 
@@ -49,8 +54,9 @@ render(tripEvents, createTripEventsList(), 'beforeend');
 
 const tripEventsList = document.querySelector('.trip-events__list');
 
-render(tripEventsList, createTripEdit(), 'beforeend');
-render(tripEventsList, createTripCreate(), 'beforeend');
-render(tripEventsList, createTripPoint(), 'beforeend');
-render(tripEventsList, createTripPoint(), 'beforeend');
-render(tripEventsList, createTripPoint(), 'beforeend');
+render(tripEventsList, createTripEdit(trips[0]), 'beforeend');
+render(tripEventsList, createTripCreate(trips[1]), 'beforeend');
+
+for (let i = 2; i < trips.length; i++) {
+  render(tripEventsList, createTripPoint(trips[i]), 'beforeend');
+}
