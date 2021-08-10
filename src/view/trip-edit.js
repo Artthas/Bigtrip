@@ -1,15 +1,8 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils.js';
 
-export const createTripEdit = (trip) => {
-  const {
-    type,
-    destination,
-    startDate,
-    endDate,
-    price,
-    offers,
-    description,
-  } = trip;
+const createTripEdit = (trip) => {
+  const {type, destination, startDate, endDate, price, offers, description} = trip;
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -166,3 +159,26 @@ export const createTripEdit = (trip) => {
     </section>
   </form>`;
 };
+
+export default class TripEdit {
+  constructor(trip) {
+    this._trip = trip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEdit(this._trip);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

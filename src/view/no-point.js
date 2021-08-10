@@ -1,17 +1,16 @@
-import { createElement } from '../utils.js';
+import {createElement} from '../utils.js';
 
-const createTripControls = () => (
-  `<div class="trip-main__trip-controls  trip-controls">
-  </div>`
+const createNoPointTemplate = () => (
+  '<p class="trip-events__msg">Click New Event to create your first point</p>'
 );
 
-export default class TripControls {
+export default class NoPoint {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createTripControls();
+    return createNoPointTemplate();
   }
 
   getElement() {

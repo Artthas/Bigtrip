@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils.js';
 
-export const createTripInfo = (trips) => {
+const createTripInfo = (trips) => {
   let minDate = trips[0].startDate;
   let maxDate = minDate;
   let total = 0;
@@ -24,3 +25,26 @@ export const createTripInfo = (trips) => {
     </p>
   </section>`;
 };
+
+export default class TripInfo {
+  constructor(trip) {
+    this._trip = trip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfo(this._trip);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

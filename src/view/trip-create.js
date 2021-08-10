@@ -1,22 +1,14 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils.js';
 
-export const createTripCreate = (trip) => {
-  const {
-    type,
-    destination,
-    startDate,
-    endDate,
-    price,
-    offers,
-    description,
-    photos,
-  } = trip;
+const createTripCreate = (trip) => {
+  const {type, destination, startDate, endDate, price, offers, description, photos} = trip;
 
-  let photosElements = '';
+  const newPhotos = Array.from(photos);
 
-  for (const element of photos) {
-    photosElements += `<img class="event__photo" src="${element}" alt="Event photo"></img>\n`;
-  }
+  const photosElements = newPhotos
+    .map((item) => `<img class="event__photo" src="${item}" alt="Event photo"></img>`)
+    .join('');
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -174,3 +166,26 @@ export const createTripCreate = (trip) => {
     </section>
   </form>`;
 };
+
+export default class TripCreate {
+  constructor(trip) {
+    this._trip = trip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripCreate(this._trip);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
