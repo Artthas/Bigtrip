@@ -91,3 +91,4 @@ render(tripEventsComponent.getElement(), tripEventsListComponent.getElement(), R
 for (let i = 2; i < trips.length; i++) {
   renderPoint(tripEventsListComponent.getElement(), trips[i]);
 }
+// Fake changes
