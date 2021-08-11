@@ -1,62 +1,93 @@
-import { createTripTabs } from './view/trip-tabs.js';
-import { createTripInfo } from './view/trip-info.js';
-import { createTripFilters } from './view/trip-filters.js';
-import { createTripSort } from './view/trip-sort.js';
-import { createTripCreate } from './view/trip-create.js';
-import { createTripEdit } from './view/trip-edit.js';
-import { createTripPoint } from './view/trip-point.js';
-import { createTripMain } from './view/trip-main.js';
-import { createTripMainEventAddBtn } from './view/trip-main-event-add-btn.js';
-import { createTripControls } from './view/trip-controls.js';
-import { createTripControlsNavigation } from './view/trip-controls-navigation.js';
-import { createTripControlsFilters } from './view/trip-controls-filters.js';
-import { createTripEvents } from './view/trip-events.js';
-import { createTripEventsList } from './view/trip-events-list.js';
+import TripTabsView from './view/trip-tabs.js';
+import TripInfoView from './view/trip-info.js';
+import TripFiltersView from './view/trip-filters.js';
+import TripSortView from './view/trip-sort.js';
+import TripCreateView from './view/trip-create.js';
+import TripEditView from './view/trip-edit.js';
+import TripPointView from './view/trip-point.js';
+import TripMainView from './view/trip-main.js';
+import TripMainEventAddBtnView from './view/trip-main-event-add-btn.js';
+import TripControlsView from './view/trip-controls.js';
+import TripControlsNavigationView from './view/trip-controls-navigation.js';
+import TripControlsFiltersView from './view/trip-controls-filters.js';
+import TripEventsView from './view/trip-events.js';
+import TripEventsListView from './view/trip-events-list.js';
+import NoPointView from './view/no-point.js';
 import { generateTrip } from './mock/trip.js';
+import { render, RenderPosition } from './utils.js';
 
 const TRIP_COUNT = 15;
 
 const trips = new Array(TRIP_COUNT).fill().map(generateTrip);
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 const pageHeaderContainer = document.querySelector('.page-header__container');
 const pageMainContainer = document.querySelector('.page-main__container');
 
-render(pageHeaderContainer, createTripMain(), 'beforeend');
+const tripMainComponent = new TripMainView();
+const tripControlsComponent = new TripControlsView();
+const tripEventsComponent = new TripEventsView();
+const tripEventsListComponent = new TripEventsListView();
+const tripControlsNavigationComponent = new TripControlsNavigationView();
+const tripControlsFiltersComponent = new TripControlsFiltersView();
 
-const tripMain = document.querySelector('.trip-main');
+render(pageHeaderContainer, tripMainComponent.getElement(), RenderPosition.BEFOREEND);
+render(tripMainComponent.getElement(), tripControlsComponent.getElement(), RenderPosition.BEFOREEND);
+render(tripMainComponent.getElement(), new TripMainEventAddBtnView().getElement(), RenderPosition.BEFOREEND);
+render(tripControlsComponent.getElement(), tripControlsNavigationComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(tripControlsComponent.getElement(), tripControlsFiltersComponent.getElement(), RenderPosition.AFTERBEGIN);
 
-render(tripMain, createTripControls(), 'beforeend');
-render(tripMain, createTripMainEventAddBtn(), 'beforeend');
+const renderPoint = (tripEventsListElement, trip) => {
+  const tripPointComponent = new TripPointView(trip);
+  const tripEditComponent = new TripEditView(trip);
 
-const tripControls = document.querySelector('.trip-controls');
+  const replaceCardToForm = () => {
+    tripEventsListElement.replaceChild(tripEditComponent.getElement(), tripPointComponent.getElement());
+  };
 
-render(tripControls, createTripControlsNavigation(), 'afterbegin');
-render(tripControls, createTripControlsFilters(), 'afterbegin');
+  const replaceFormToCard = () => {
+    tripEventsListElement.replaceChild(tripPointComponent.getElement(), tripEditComponent.getElement());
+  };
 
-const tripControlsNavigation = document.querySelector('.trip-controls__navigation');
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
 
-render(tripControlsNavigation, createTripTabs(), 'beforeend');
-render(tripMain, createTripInfo(trips), 'afterbegin');
+  tripPointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceCardToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
 
-const tripControlsFilters = document.querySelector('.trip-controls__filters');
+  tripEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
-render(tripControlsFilters, createTripFilters(), 'beforeend');
-render(pageMainContainer, createTripEvents(), 'afterbegin');
+  tripEditComponent.getElement().addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
-const tripEvents = document.querySelector('.trip-events');
+  render(tripEventsListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
+};
 
-render(tripEvents, createTripSort(), 'afterbegin');
-render(tripEvents, createTripEventsList(), 'beforeend');
+if (trips.every((trip) => trip.isArchive)) {
+  render(tripEventsComponent.getElement(), new NoPointView().getElement(), RenderPosition.BEFOREEND);
+} else {
+  render(tripMainComponent.getElement(), new TripInfoView(trips).getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventsComponent.getElement(), new TripSortView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventsListComponent.getElement(), new TripCreateView(trips[1]).getElement(), RenderPosition.BEFOREEND);
+}
 
-const tripEventsList = document.querySelector('.trip-events__list');
-
-render(tripEventsList, createTripEdit(trips[0]), 'beforeend');
-render(tripEventsList, createTripCreate(trips[1]), 'beforeend');
+render(tripControlsNavigationComponent.getElement(), new TripTabsView().getElement(), RenderPosition.BEFOREEND);
+render(tripControlsFiltersComponent.getElement(), new TripFiltersView().getElement(), RenderPosition.BEFOREEND);
+render(pageMainContainer, tripEventsComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(tripEventsComponent.getElement(), tripEventsListComponent.getElement(), RenderPosition.BEFOREEND);
 
 for (let i = 2; i < trips.length; i++) {
-  render(tripEventsList, createTripPoint(trips[i]), 'beforeend');
+  renderPoint(tripEventsListComponent.getElement(), trips[i]);
 }

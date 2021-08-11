@@ -1,29 +1,20 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils.js';
 
-export const createTripPoint = (trip) => {
-  const {
-    type,
-    destination,
-    startDate,
-    endDate,
-    duration,
-    price,
-    offers,
-    isFavorite,
-  } = trip;
+const createTripPoint = (trip) => {
+  const {type, destination, startDate, endDate, duration, price, offers, isFavorite} = trip;
 
-  let offersElements = '';
-
-  for (const element of offers) {
-    if (element.isChecked === 'checked') {
-      offersElements +=
-        `<li class="event__offer">
-          <span class="event__offer-title">${Object.keys(element)[0]}</span>
-            &plus;&euro;&nbsp;
-          <span class="event__offer-price">${Object.values(element)[0]}</span>
-        </li>\n`;
-    }
-  }
+  const offersElements = offers
+    .map((item) => {
+      if (item.isChecked === 'checked') {
+        return `<li class="event__offer">
+                  <span class="event__offer-title">${Object.keys(item)[0]}</span>
+                    &plus;&euro;&nbsp;
+                  <span class="event__offer-price">${Object.values(item)[0]}</span>
+                </li>`;
+      }
+    })
+    .join('');
 
   return `<div class="event">
     <time class="event__date" datetime="2019-03-20">${dayjs(startDate).format('MMM D')}</time>
@@ -55,3 +46,26 @@ export const createTripPoint = (trip) => {
     </button>
   </div>`;
 };
+
+export default class TripPoint {
+  constructor(trip) {
+    this._trip = trip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripPoint(this._trip);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
