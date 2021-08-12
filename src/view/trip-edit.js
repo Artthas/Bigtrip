@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripEdit = (trip) => {
   const {type, destination, startDate, endDate, price, offers, description} = trip;
@@ -160,25 +160,37 @@ const createTripEdit = (trip) => {
   </form>`;
 };
 
-export default class TripEdit {
+export default class TripEdit extends AbstractView {
   constructor(trip) {
+    super();
     this._trip = trip;
-    this._element = null;
+
+    this._tripPointClickHandler = this._tripPointClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createTripEdit(this._trip);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _tripPointClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.tripPointClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setTripPointClickHandler(callback) {
+    this._callback.tripPointClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._tripPointClickHandler);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener('submit', this._formSubmitHandler);
   }
 }
+
