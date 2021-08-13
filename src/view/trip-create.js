@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripCreate = (trip) => {
   const {type, destination, startDate, endDate, price, offers, description, photos} = trip;
@@ -167,25 +167,13 @@ const createTripCreate = (trip) => {
   </form>`;
 };
 
-export default class TripCreate {
+export default class TripCreate extends AbstractView {
   constructor(trip) {
+    super();
     this._trip = trip;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripCreate(this._trip);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

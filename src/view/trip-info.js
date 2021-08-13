@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripInfo = (trips) => {
   let minDate = trips[0].startDate;
@@ -26,25 +26,13 @@ const createTripInfo = (trips) => {
   </section>`;
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractView {
   constructor(trip) {
+    super();
     this._trip = trip;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfo(this._trip);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
