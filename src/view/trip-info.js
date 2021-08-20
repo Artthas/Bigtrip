@@ -27,12 +27,12 @@ const createTripInfo = (trips) => {
 };
 
 export default class TripInfo extends AbstractView {
-  constructor(trip) {
+  constructor(trips) {
     super();
-    this._trip = trip;
+    this._trips = trips;
   }
 
   getTemplate() {
-    return createTripInfo(this._trip);
+    return createTripInfo(this._trips);
   }
 }

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomIntegerEveryFive } from '../utils/common.js';
 
 const generateType = () => {
@@ -20,6 +21,8 @@ const generateOffer = (type) => {
   const isChecked = () => {
     if (getRandomInteger(0, 1)) {
       return 'checked';
+    } else {
+      return '';
     }
   };
 
@@ -103,14 +106,6 @@ const generateDuration = (startDate, endDate) => {
   return difference;
 };
 
-const isFavorite = () => {
-  if (getRandomInteger(0, 1)) {
-    return 'event__favorite-btn--active';
-  } else {
-    return '';
-  }
-};
-
 const generatePrice = (offers) => {
   let price = getRandomIntegerEveryFive(5, 200);
 
@@ -132,6 +127,7 @@ export const generateTrip = () => {
   const daysGapEnd = daysGapStart + getRandomInteger(0, 2);
 
   return {
+    id: nanoid(),
     type: generateType(),
     destination: generateDestination(),
     startDate: generateDate(daysGapStart, hoursGapStart, minutesGapStart),
@@ -139,14 +135,14 @@ export const generateTrip = () => {
     get duration() {
       return generateDuration(this.startDate, this.endDate);
     },
-    get price() {
-      return generatePrice(this.offers);
-    },
     get offers() {
       return generateOffer(this.type);
     },
+    get price() {
+      return generatePrice(this.offers);
+    },
     description: generateDescription(),
-    isFavorite: isFavorite(),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
     photos: generatePhoto(),
   };
 };
