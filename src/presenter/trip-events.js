@@ -16,7 +16,7 @@ export default class TripEvents {
     this._currentSortType = SortType.DAY;
 
     this._tripEventsComponent = new TripEventsView();
-    this._tripSortComponent = new TripSortView();
+    this._tripSortComponent = new TripSortView(this._sortTypeArray);
     this._tripEventsListComponent = new TripEventsListView();
     this._noPointComponent = new NoPointView();
     this._tripInfoComponent = new TripInfoView();
@@ -65,8 +65,6 @@ export default class TripEvents {
       case SortType.PRICE:
         this._tripEventsPoints.sort(sortByPrice);
         break;
-      default:
-        this._tripEventsPoints = this._sourcedTripEventsPoints.slice();
     }
 
     this._currentSortType = sortType;

@@ -121,32 +121,32 @@ const createTripCreate = (trip) => {
             </label>
           </div>
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${Object.values(offers[1])[1]}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" ${Object.values(offers[1])[1]}>
+            <label class="event__offer-label" for="event-offer-comfort-1">
               <span class="event__offer-title">${Object.keys(offers[1])[0]}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${Object.values(offers[1])[0]}</span>
             </label>
           </div>
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${Object.values(offers[2])[1]}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal" ${Object.values(offers[2])[1]}>
+            <label class="event__offer-label" for="event-offer-meal-1">
               <span class="event__offer-title">${Object.keys(offers[2])[0]}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${Object.values(offers[2])[0]}</span>
             </label>
           </div>
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${Object.values(offers[3])[1]}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats" ${Object.values(offers[3])[1]}>
+            <label class="event__offer-label" for="event-offer-seats-1">
               <span class="event__offer-title">${Object.keys(offers[3])[0]}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${Object.values(offers[3])[0]}</span>
             </label>
           </div>
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${Object.values(offers[4])[1]}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train" ${Object.values(offers[4])[1]}>
+            <label class="event__offer-label" for="event-offer-train-1">
               <span class="event__offer-title">${Object.keys(offers[4])[0]}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${Object.values(offers[4])[0]}</span>
