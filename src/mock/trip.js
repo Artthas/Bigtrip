@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomIntegerEveryFive } from '../utils/common.js';
 
 const generateType = () => {
@@ -16,26 +17,24 @@ const generateDestination = () => {
   return destinations[randomIndex];
 };
 
-const generateOffer = (type) => {
+const generateOffer = () => {
   const isChecked = () => {
     if (getRandomInteger(0, 1)) {
       return 'checked';
+    } else {
+      return '';
     }
   };
 
-  const offers = {
-    'Taxi': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Bus': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Train': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Ship': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Drive': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Flight': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Check-in': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Sightseeing': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-    'Restaurant': [{'Add luggage': '50', isChecked: isChecked()}, {'Switch to comfort': '80', isChecked: isChecked()}, {'Add meal': '15', isChecked: isChecked()}, {'Choose seats': '5', isChecked: isChecked()}, {'Travel by train': '40', isChecked: isChecked()}],
-  };
+  const offers = [
+    {'Add luggage': '50', isChecked: isChecked()},
+    {'Switch to comfort': '80', isChecked: isChecked()},
+    {'Add meal': '15', isChecked: isChecked()},
+    {'Choose seats': '5', isChecked: isChecked()},
+    {'Travel by train': '40', isChecked: isChecked()},
+  ];
 
-  return offers[type];
+  return offers;
 };
 
 const generateDescription = () => {
@@ -103,26 +102,6 @@ const generateDuration = (startDate, endDate) => {
   return difference;
 };
 
-const isFavorite = () => {
-  if (getRandomInteger(0, 1)) {
-    return 'event__favorite-btn--active';
-  } else {
-    return '';
-  }
-};
-
-const generatePrice = (offers) => {
-  let price = getRandomIntegerEveryFive(5, 200);
-
-  for (const element of offers) {
-    if (element.isChecked === 'checked') {
-      price += Number(Object.values(element)[0]);
-    }
-  }
-
-  return price;
-};
-
 export const generateTrip = () => {
   const hoursGapStart = getRandomInteger(3, 6);
   const hoursGapEnd = getRandomInteger(7, 12);
@@ -132,6 +111,7 @@ export const generateTrip = () => {
   const daysGapEnd = daysGapStart + getRandomInteger(0, 2);
 
   return {
+    id: nanoid(),
     type: generateType(),
     destination: generateDestination(),
     startDate: generateDate(daysGapStart, hoursGapStart, minutesGapStart),
@@ -139,14 +119,19 @@ export const generateTrip = () => {
     get duration() {
       return generateDuration(this.startDate, this.endDate);
     },
+    offers: generateOffer(),
+    _firstPrice: getRandomIntegerEveryFive(5, 200),
     get price() {
-      return generatePrice(this.offers);
-    },
-    get offers() {
-      return generateOffer(this.type);
+      let price = this._firstPrice;
+      for (const element of this.offers) {
+        if (element.isChecked === 'checked') {
+          price += Number(Object.values(element)[0]);
+        }
+      }
+      return price;
     },
     description: generateDescription(),
-    isFavorite: isFavorite(),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
     photos: generatePhoto(),
   };
 };

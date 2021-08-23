@@ -2,7 +2,6 @@ import AbstractView from './abstract.js';
 
 const createTripEventsList = () => (
   `<ul class="trip-events__list">
-    <!-- Контент -->
   </ul>`
 );
 
