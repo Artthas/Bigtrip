@@ -1,84 +1,143 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract.js';
 
-const createTripEdit = (trip) => {
-  const {type, destination, startDate, endDate, price, offers, description} = trip;
+const createTripEditDestination = (description, photos, isDescription, isPhotos) => (
+  (isDescription || isPhotos) ?
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${isDescription ? description : ''}</p>
+      <div class="event__photos-container">
+        <div class="event__photos-tape">${photos}</div>
+      </div>
+    </section>` : ''
+);
+
+const createTripEditOffers = (offers, id) => {
+  const offersElements = offers !== null ? offers
+    .map((item) =>
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${Object.keys(item)[0]}-${id}" type="checkbox" name="event-offer-${Object.keys(item)[0]}" ${Object.values(item)[1]}>
+        <label class="event__offer-label" for="event-offer-${Object.keys(item)[0]}-${id}">
+          <span class="event__offer-title">${Object.keys(item)[0]}</span>
+            &plus;&euro;&nbsp;
+          <span class="event__offer-price">${Object.values(item)[0]}</span>
+        </label>
+      </div>`)
+    .join('') : '';
+  return offers !== null ?
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">${offersElements}</div>
+    </section>` : '';
+};
+
+const createTripEdit = (data) => {
+  const {type, destination, startDate, endDate, price, offers, description, photos, isDescription, isPhotos} = data;
+
+  const newPhotos = Array.from(photos);
+
+  const photosElements = newPhotos
+    .map((item) => `<img class="event__photo" src="${Object.values(item)[0]}" alt="${Object.keys(item)[0]}"></img>`)
+    .join('');
+
+  const editDestination = createTripEditDestination(description, photosElements, isDescription, isPhotos);
+  const editOffers = createTripEditOffers(offers, data.id);
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
+        <label class="event__type  event__type-btn" for="event-type-toggle-${data.id}">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${Object.keys(type).find((key) => type[key] === 'checked').toLowerCase()}.png" alt="Event type icon">
         </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${data.id}" type="checkbox">
 
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
 
             <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
+              <input id="event-type-${Object.keys(type)[0].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[0].toLowerCase()}" ${Object.values(type)[0]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[0].toLowerCase()}" for="event-type-${Object.keys(type)[0].toLowerCase()}-${data.id}">${Object.keys(type)[0]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
+              <input id="event-type-${Object.keys(type)[1].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[1].toLowerCase()}" ${Object.values(type)[1]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[1].toLowerCase()}" for="event-type-${Object.keys(type)[1].toLowerCase()}-${data.id}">${Object.keys(type)[1]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
+              <input id="event-type-${Object.keys(type)[2].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[2].toLowerCase()}" ${Object.values(type)[2]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[2].toLowerCase()}" for="event-type-${Object.keys(type)[2].toLowerCase()}-${data.id}">${Object.keys(type)[2]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
+              <input id="event-type-${Object.keys(type)[3].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[3].toLowerCase()}" ${Object.values(type)[3]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[3].toLowerCase()}" for="event-type-${Object.keys(type)[3].toLowerCase()}-${data.id}">${Object.keys(type)[3]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-              <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
+              <input id="event-type-${Object.keys(type)[4].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[4].toLowerCase()}" ${Object.values(type)[4]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[4].toLowerCase()}" for="event-type-${Object.keys(type)[4].toLowerCase()}-${data.id}">${Object.keys(type)[4]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
+              <input id="event-type-${Object.keys(type)[5].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[5].toLowerCase()}" ${Object.values(type)[5]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[5].toLowerCase()}" for="event-type-${Object.keys(type)[5].toLowerCase()}-${data.id}">${Object.keys(type)[5]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
+              <input id="event-type-${Object.keys(type)[6].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[6].toLowerCase()}" ${Object.values(type)[6]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[6].toLowerCase()}" for="event-type-${Object.keys(type)[6].toLowerCase()}-${data.id}">${Object.keys(type)[6]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
+              <input id="event-type-${Object.keys(type)[7].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[7].toLowerCase()}" ${Object.values(type)[7]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[7].toLowerCase()}" for="event-type-${Object.keys(type)[7].toLowerCase()}-${data.id}">${Object.keys(type)[7]}</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
+              <input id="event-type-${Object.keys(type)[8].toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${Object.keys(type)[8].toLowerCase()}" ${Object.values(type)[8]}>
+              <label class="event__type-label  event__type-label--${Object.keys(type)[8].toLowerCase()}" for="event-type-${Object.keys(type)[8].toLowerCase()}-${data.id}">${Object.keys(type)[8]}</label>
             </div>
           </fieldset>
         </div>
       </div>
 
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          ${type}
+        <label class="event__label  event__type-output" for="event-destination-${data.id}">
+          ${Object.keys(type).find((key) => type[key] === 'checked')}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
-        <datalist id="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-${data.id}" type="text" name="event-destination" value="${destination}" list="destination-list-${data.id}">
+        <datalist id="destination-list-${data.id}">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
           <option value="Chamonix"></option>
+          <option value="Helsinki"></option>
+          <option value="Oslo"></option>
+          <option value="Kopenhagen"></option>
+          <option value="Den Haag"></option>
+          <option value="Rotterdam"></option>
+          <option value="Saint Petersburg"></option>
+          <option value="Moscow"></option>
+          <option value="Sochi"></option>
+          <option value="Tokio"></option>
+          <option value="Kioto"></option>
+          <option value="Nagasaki"></option>
+          <option value="Hiroshima"></option>
+          <option value="Berlin"></option>
+          <option value="Munich"></option>
+          <option value="Frankfurt"></option>
+          <option value="Vien"></option>
+          <option value="Rome"></option>
+          <option value="Naples"></option>
+          <option value="Venice"></option>
+          <option value="Milan"></option>
+          <option value="Monaco"></option>
+          <option value="Paris"></option>
+          <option value="Barcelona"></option>
+          <option value="Valencia"></option>
+          <option value="Madrid"></option>
         </datalist>
       </div>
 
@@ -105,57 +164,8 @@ const createTripEdit = (trip) => {
       </button>
     </header>
     <section class="event__details">
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-        <div class="event__available-offers">
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${trip.id}" type="checkbox" name="event-offer-luggage" ${Object.values(offers[0])[1]}>
-            <label class="event__offer-label" for="event-offer-luggage-${trip.id}">
-              <span class="event__offer-title">${Object.keys(offers[0])[0]}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${Object.values(offers[0])[0]}</span>
-            </label>
-          </div>
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${trip.id}" type="checkbox" name="event-offer-comfort" ${Object.values(offers[1])[1]}>
-            <label class="event__offer-label" for="event-offer-comfort-${trip.id}">
-              <span class="event__offer-title">${Object.keys(offers[1])[0]}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${Object.values(offers[1])[0]}</span>
-            </label>
-          </div>
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-${trip.id}" type="checkbox" name="event-offer-meal" ${Object.values(offers[2])[1]}>
-            <label class="event__offer-label" for="event-offer-meal-${trip.id}">
-              <span class="event__offer-title">${Object.keys(offers[2])[0]}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${Object.values(offers[2])[0]}</span>
-            </label>
-          </div>
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-${trip.id}" type="checkbox" name="event-offer-seats" ${Object.values(offers[3])[1]}>
-            <label class="event__offer-label" for="event-offer-seats-${trip.id}">
-              <span class="event__offer-title">${Object.keys(offers[3])[0]}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${Object.values(offers[3])[0]}</span>
-            </label>
-          </div>
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-${trip.id}" type="checkbox" name="event-offer-train" ${Object.values(offers[4])[1]}>
-            <label class="event__offer-label" for="event-offer-train-${trip.id}">
-              <span class="event__offer-title">${Object.keys(offers[4])[0]}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${Object.values(offers[4])[0]}</span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
-      </section>
+      ${editOffers}
+      ${editDestination}
     </section>
   </form>`;
 };
@@ -163,14 +173,59 @@ const createTripEdit = (trip) => {
 export default class TripEdit extends AbstractView {
   constructor(trip) {
     super();
-    this._trip = trip;
+    this._data = TripEdit.parseTripToData(trip);
 
     this._tripPointClickHandler = this._tripPointClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createTripEdit(this._trip);
+    return createTripEdit(this._data);
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    this._data.type[Object.keys(this._data.type).find((key) => this._data.type[key] === 'checked')] = '';
+    evt.target.value = evt.target.value[0].toUpperCase() + evt.target.value.substring(1);
+    this._data.type[evt.target.value] = 'checked';
+    this._data.offers = this._data.type;
+    this.updateElement();
+  }
+
+  _destinationToggleHandler(evt) {
+    evt.preventDefault();
+    this._data.destination = evt.target.value;
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setTripPointClickHandler(this._callback.tripPointClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-group')
+      .addEventListener('change', this._typeToggleHandler);
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this._destinationToggleHandler);
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
   }
 
   _tripPointClickHandler(evt) {
@@ -185,12 +240,44 @@ export default class TripEdit extends AbstractView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(TripEdit.parseDataToTrip(this._data));
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener('submit', this._formSubmitHandler);
+  }
+
+  static parseTripToData(trip) {
+    return Object.assign(
+      {},
+      trip,
+      {
+        isOffers: trip.offers !== null,
+        isDescription: trip.description !== null,
+        isPhotos: trip.photos !== null,
+      },
+    );
+  }
+
+  static parseDataToTrip(data) {
+    data = Object.assign({}, data);
+
+    if (!data.isOffers) {
+      data.offers = null;
+    }
+    if (!data.isDescription) {
+      data.description = null;
+    }
+    if (!data.isPhotos) {
+      data.photos = null;
+    }
+
+    delete data.isOffers;
+    delete data.isDescription;
+    delete data.isPhotos;
+
+    return data;
   }
 }
 
