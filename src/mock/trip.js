@@ -29,7 +29,7 @@ const generateDestination = () => {
   return destinations[randomIndex];
 };
 
-const generateOffer = (type = 'Taxi') => {
+const generateOffer = () => {
   const isChecked = () => {
     if (getRandomInteger(0, 1)) {
       return 'checked';
@@ -50,7 +50,7 @@ const generateOffer = (type = 'Taxi') => {
     'Restaurant': [{'Choose live music': '150', isChecked: isChecked()}, {'Choose VIP area': '70', isChecked: isChecked()}],
   };
 
-  return offers[Object.keys(type).find((key) => type[key] === 'checked')];
+  return offers;
 };
 
 const generateDescription = () => {
@@ -164,8 +164,9 @@ export const generateTrip = () => {
     get duration() {
       return generateDuration(this.startDate, this.endDate);
     },
+    _offers: generateOffer(),
     get offers() {
-      return generateOffer(this.type);
+      return this._offers[Object.keys(this.type).find((key) => this.type[key] === 'checked')];
     },
     _firstPrice: getRandomInteger(40, 200),
     get price() {

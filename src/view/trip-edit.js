@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 const createTripEditDestination = (description, photos, isDescription, isPhotos) => (
   (isDescription || isPhotos) ?
@@ -170,7 +170,7 @@ const createTripEdit = (data) => {
   </form>`;
 };
 
-export default class TripEdit extends AbstractView {
+export default class TripEdit extends SmartView {
   constructor(trip) {
     super();
     this._data = TripEdit.parseTripToData(trip);
@@ -187,18 +187,27 @@ export default class TripEdit extends AbstractView {
     return createTripEdit(this._data);
   }
 
+  reset(trip) {
+    this.updateData(
+      TripEdit.parseTripToData(trip),
+    );
+  }
+
   _typeToggleHandler(evt) {
     evt.preventDefault();
     this._data.type[Object.keys(this._data.type).find((key) => this._data.type[key] === 'checked')] = '';
     evt.target.value = evt.target.value[0].toUpperCase() + evt.target.value.substring(1);
     this._data.type[evt.target.value] = 'checked';
-    this._data.offers = this._data.type;
+    this._data.offers = this._data._offers[Object.keys(this._data.type).find((key) => this._data.type[key] === 'checked')];
     this.updateElement();
   }
 
   _destinationToggleHandler(evt) {
     evt.preventDefault();
     this._data.destination = evt.target.value;
+    this._data.description = this._data._description[this._data.destination];
+    this._data.photos = this._data._photos[this._data.destination];
+    this.updateElement();
   }
 
   restoreHandlers() {
@@ -214,18 +223,6 @@ export default class TripEdit extends AbstractView {
     this.getElement()
       .querySelector('.event__input--destination')
       .addEventListener('change', this._destinationToggleHandler);
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
   }
 
   _tripPointClickHandler(evt) {
