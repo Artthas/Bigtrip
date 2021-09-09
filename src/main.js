@@ -32,4 +32,4 @@ render(tripControlsFiltersComponent, new TripFiltersView(), RenderPosition.BEFOR
 const tripEventsPresenter = new TripEventsPresenter(pageMainContainer);
 
 tripEventsPresenter.init(trips);
-// Для коммита
+

@@ -68,6 +68,7 @@ export default class TripPoint {
   _replaceCardToForm() {
     replace(this._tripEditComponent, this._tripPointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._tripEditComponent.reset(this._tripPoint);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
@@ -81,6 +82,7 @@ export default class TripPoint {
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this._tripEditComponent.reset(this._tripPoint);
       this._replaceFormToCard();
     }
   }

@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract.js';
 
-const createTripPoint = (trip) => {
-  const {type, destination, startDate, endDate, duration, price, offers, isFavorite} = trip;
-
-  const offersElements = offers
+const createTripEditOffers = (offers) => {
+  const offersElements = offers !== null ? offers
     .map((item) => {
       if (item.isChecked === 'checked') {
         return `<li class="event__offer">
@@ -14,16 +12,23 @@ const createTripPoint = (trip) => {
                 </li>`;
       }
     })
-    .join('');
+    .join('') : '';
+  return offers !== null ? `<ul class="event__selected-offers">${offersElements}</ul>` : '';
+};
+
+const createTripPoint = (trip) => {
+  const {type, destination, startDate, endDate, duration, price, offers, isFavorite} = trip;
 
   const favorite = (isFavorite) ? 'event__favorite-btn--active' : '';
+
+  const editOffers = createTripEditOffers(offers);
 
   return `<div class="event">
     <time class="event__date" datetime="2019-03-20">${dayjs(startDate).format('MMM D')}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${Object.keys(type).find((key) => type[key] === 'checked').toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${destination}</h3>
+    <h3 class="event__title">${Object.keys(type).find((key) => type[key] === 'checked')} ${destination}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-20T08:25">${dayjs(startDate).format('HH:mm')}</time>
@@ -36,7 +41,7 @@ const createTripPoint = (trip) => {
       &euro;&nbsp;<span class="event__price-value">${price}</span>
     </p>
     <h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers">${offersElements}</ul>
+    ${editOffers}
     <button class="event__favorite-btn ${favorite}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
