@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
 import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createTripEditDestination = (description, photos, isDescription, isPhotos) => (
   (isDescription || isPhotos) ?
@@ -174,13 +177,19 @@ export default class TripEdit extends SmartView {
   constructor(trip) {
     super();
     this._data = TripEdit.parseTripToData(trip);
+    this._startDatepicker = null;
+    this._endDatepicker = null;
 
     this._tripPointClickHandler = this._tripPointClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   getTemplate() {
@@ -195,23 +204,73 @@ export default class TripEdit extends SmartView {
 
   _typeToggleHandler(evt) {
     evt.preventDefault();
-    this._data.type[Object.keys(this._data.type).find((key) => this._data.type[key] === 'checked')] = '';
+    const type = Object.assign({}, this._data.type);
+    let offers = Object.assign({}, this._data.offers);
+    type[Object.keys(type).find((key) => type[key] === 'checked')] = '';
     evt.target.value = evt.target.value[0].toUpperCase() + evt.target.value.substring(1);
-    this._data.type[evt.target.value] = 'checked';
-    this._data.offers = this._data._offers[Object.keys(this._data.type).find((key) => this._data.type[key] === 'checked')];
-    this.updateElement();
+    type[evt.target.value] = 'checked';
+    offers = this._data._offers[Object.keys(type).find((key) => type[key] === 'checked')];
+    this.updateData({type, offers});
   }
 
   _destinationToggleHandler(evt) {
     evt.preventDefault();
-    this._data.destination = evt.target.value;
-    this._data.description = this._data._description[this._data.destination];
-    this._data.photos = this._data._photos[this._data.destination];
-    this.updateElement();
+    const destination = evt.target.value;
+    this.updateData({
+      destination,
+      description: this._data._description[destination],
+      photos: this._data._photos[destination],
+    });
+  }
+
+  _startDateChangeHandler([userStartDate]) {
+    this.updateData({
+      startDate: userStartDate,
+    });
+  }
+
+  _endDateChangeHandler([userEndDate]) {
+    this.updateData({
+      endDate: userEndDate,
+    });
+  }
+
+  _setStartDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+
+    this._startDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = "event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.startDate,
+        onChange: this._startDateChangeHandler,
+      },
+    );
+  }
+
+  _setEndDatepicker() {
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+
+    this._endDatepicker = flatpickr(
+      this.getElement().querySelector('input[name = "event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.endDate,
+        onChange: this._endDateChangeHandler,
+      },
+    );
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
     this.setTripPointClickHandler(this._callback.tripPointClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
