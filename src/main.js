@@ -6,6 +6,7 @@ import TripControlsView from './view/trip-controls.js';
 import TripControlsNavigationView from './view/trip-controls-navigation.js';
 import TripControlsFiltersView from './view/trip-controls-filters.js';
 import TripEventsPresenter from './presenter/trip-events.js';
+import TripsModel from './model/trips.js';
 import { generateTrip } from './mock/trip.js';
 import { render, RenderPosition } from './utils/render.js';
 
@@ -29,7 +30,10 @@ render(tripControlsComponent, tripControlsFiltersComponent, RenderPosition.AFTER
 render(tripControlsNavigationComponent, new TripTabsView(), RenderPosition.BEFOREEND);
 render(tripControlsFiltersComponent, new TripFiltersView(), RenderPosition.BEFOREEND);
 
-const tripEventsPresenter = new TripEventsPresenter(pageMainContainer);
+const tripsModel = new TripsModel();
+tripsModel.setTrips(trips);
+
+const tripEventsPresenter = new TripEventsPresenter(pageMainContainer, tripsModel);
 
 tripEventsPresenter.init(trips);
 

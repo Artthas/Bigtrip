@@ -1,6 +1,7 @@
 import TripPointView from '../view/trip-point.js';
 import TripEditView from '../view/trip-edit.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
+import { UserAction, UpdateType } from '../utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -21,6 +22,7 @@ export default class TripPoint {
     this._handleTripPointClick = this._handleTripPointClick.bind(this);
     this._handleTripEditClick = this._handleTripEditClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
   init(tripPoint) {
@@ -35,7 +37,7 @@ export default class TripPoint {
     this._tripPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._tripPointComponent.setTripPointClickHandler(this._handleTripPointClick);
     this._tripEditComponent.setTripPointClickHandler(this._handleTripEditClick);
-    this._tripEditComponent.setFormSubmitHandler(this._handleTripEditClick);
+    this._tripEditComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevTripPointComponent === null || prevTripEditComponent === null) {
       render(this._tripEventsListContainer, this._tripPointComponent, RenderPosition.BEFOREEND);
@@ -89,6 +91,8 @@ export default class TripPoint {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._tripPoint,
@@ -97,6 +101,15 @@ export default class TripPoint {
         },
       ),
     );
+  }
+
+  _handleFormSubmit(trip) {
+    this._changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      trip,
+    );
+    this._replaceFormToCard();
   }
 
   _handleTripPointClick() {

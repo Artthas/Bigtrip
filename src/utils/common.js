@@ -7,20 +7,6 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -62,4 +48,16 @@ const SortType = {
   PRICE: 'PRICE',
 };
 
-export {getRandomInteger, updateItem, sortByDay, sortByTime, sortByPrice, SortType};
+const UserAction = {
+  UPDATE_TRIP: 'UPDATE_TRIP',
+  ADD_TRIP: 'ADD_TRIP',
+  DELETE_TRIP: 'DELETE_TRIP',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {getRandomInteger, sortByDay, sortByTime, sortByPrice, SortType, UserAction, UpdateType};
