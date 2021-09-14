@@ -42,22 +42,4 @@ const sortByTime = (tripA, tripB) => {
 
 const sortByPrice = (tripA, tripB) => tripB.price - tripA.price;
 
-const SortType = {
-  DAY: 'DAY',
-  TIME: 'TIME',
-  PRICE: 'PRICE',
-};
-
-const UserAction = {
-  UPDATE_TRIP: 'UPDATE_TRIP',
-  ADD_TRIP: 'ADD_TRIP',
-  DELETE_TRIP: 'DELETE_TRIP',
-};
-
-const UpdateType = {
-  PATCH: 'PATCH',
-  MINOR: 'MINOR',
-  MAJOR: 'MAJOR',
-};
-
-export {getRandomInteger, sortByDay, sortByTime, sortByPrice, SortType, UserAction, UpdateType};
+export {getRandomInteger, sortByDay, sortByTime, sortByPrice};

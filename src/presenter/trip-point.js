@@ -1,7 +1,7 @@
 import TripPointView from '../view/trip-point.js';
 import TripEditView from '../view/trip-edit.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
-import { UserAction, UpdateType } from '../utils/common.js';
+import { UserAction, UpdateType } from '../utils/const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -23,6 +23,7 @@ export default class TripPoint {
     this._handleTripEditClick = this._handleTripEditClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(tripPoint) {
@@ -38,6 +39,7 @@ export default class TripPoint {
     this._tripPointComponent.setTripPointClickHandler(this._handleTripPointClick);
     this._tripEditComponent.setTripPointClickHandler(this._handleTripEditClick);
     this._tripEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._tripEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevTripPointComponent === null || prevTripEditComponent === null) {
       render(this._tripEventsListContainer, this._tripPointComponent, RenderPosition.BEFOREEND);
@@ -71,7 +73,6 @@ export default class TripPoint {
     replace(this._tripEditComponent, this._tripPointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._tripEditComponent.reset(this._tripPoint);
-    this._changeMode();
     this._mode = Mode.EDITING;
   }
 
@@ -91,7 +92,7 @@ export default class TripPoint {
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_TRIP,
       UpdateType.MINOR,
       Object.assign(
         {},
@@ -105,11 +106,19 @@ export default class TripPoint {
 
   _handleFormSubmit(trip) {
     this._changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_TRIP,
       UpdateType.MINOR,
       trip,
     );
     this._replaceFormToCard();
+  }
+
+  _handleDeleteClick(trip) {
+    this._changeData(
+      UserAction.DELETE_TRIP,
+      UpdateType.MINOR,
+      trip,
+    );
   }
 
   _handleTripPointClick() {

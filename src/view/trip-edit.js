@@ -145,19 +145,19 @@ const createTripEdit = (data) => {
       </div>
 
       <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(startDate).format('DD/MM/YY HH:mm')}">
+        <label class="visually-hidden" for="event-start-time-${data.id}">From</label>
+        <input class="event__input  event__input--time" id="event-start-time-${data.id}" type="text" name="event-start-time" value="${dayjs(startDate).format('DD/MM/YY HH:mm')}">
         &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(endDate).format('DD/MM/YY HH:mm')}">
+        <label class="visually-hidden" for="event-end-time-${data.id}">To</label>
+        <input class="event__input  event__input--time" id="event-end-time-${data.id}" type="text" name="event-end-time" value="${dayjs(endDate).format('DD/MM/YY HH:mm')}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
-        <label class="event__label" for="event-price-1">
+        <label class="event__label" for="event-price-${data.id}">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+        <input class="event__input  event__input--price" id="event-price-${data.id}" type="number" name="event-price" value="${price}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -186,6 +186,7 @@ export default class TripEdit extends SmartView {
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setStartDatepicker();
@@ -200,6 +201,19 @@ export default class TripEdit extends SmartView {
     this.updateData(
       TripEdit.parseTripToData(trip),
     );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
   }
 
   _typeToggleHandler(evt) {
@@ -273,6 +287,7 @@ export default class TripEdit extends SmartView {
     this._setEndDatepicker();
     this.setTripPointClickHandler(this._callback.tripPointClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -302,6 +317,16 @@ export default class TripEdit extends SmartView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener('submit', this._formSubmitHandler);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(TripEdit.parseDataToTrip(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formDeleteClickHandler);
   }
 
   static parseTripToData(trip) {

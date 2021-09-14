@@ -30,7 +30,7 @@ export default class Trips extends AbstractObserver {
     this._notify(updateType, update);
   }
 
-  addTask(updateType, update) {
+  addTrip(updateType, update) {
     this._trips = [
       update,
       ...this._trips,
@@ -39,7 +39,7 @@ export default class Trips extends AbstractObserver {
     this._notify(updateType, update);
   }
 
-  deleteTask(updateType, update) {
+  deleteTrip(updateType, update) {
     const index = this._trips.findIndex((trip) => trip.id === update.id);
 
     if (index === -1) {
