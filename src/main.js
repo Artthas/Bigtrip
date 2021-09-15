@@ -87,3 +87,4 @@ newEventBtn.addEventListener('click', (evt) => {
   tripTabsComponent.setMenuItem(MenuItem.TABLE);
   tripEventsPresenter.createTrip(newEventBtn);
 });
+// Change
