@@ -123,25 +123,34 @@ const generatePhoto = () => {
 
 const generateDate = (daysGap, hoursGap, minutesGap) => dayjs().add(daysGap, 'day').add(hoursGap, 'hour').add(minutesGap, 'minute').toDate();
 
+const generateDurationInMs = (startDate, endDate) => dayjs(endDate).diff(dayjs(startDate));
+
 const generateDuration = (startDate, endDate) => {
 
-  const differenceInDays = parseInt((endDate - startDate) / 86400000, 10);
+  let differenceInDays = parseInt((endDate - startDate) / 86400000, 10);
   let differenceInHours = parseInt((endDate - startDate) / 3600000, 10);
-  const differenceInMinutes = parseInt((endDate - startDate) / 60000, 10) - differenceInHours * 60;
+  let differenceInMinutes = parseInt((endDate - startDate) / 60000, 10) - differenceInHours * 60;
   let difference = '';
 
   if (differenceInDays > 0) {
     differenceInHours = differenceInHours - differenceInDays * 24;
   }
 
-  if (differenceInDays === 0) {
-    difference = `0${differenceInHours}H ${differenceInMinutes}M`;
-  } else if (differenceInHours === 0) {
-    difference = `0${differenceInDays}D 0${differenceInHours}H ${differenceInMinutes}M`;
-  } else if (differenceInMinutes < 10) {
-    difference = `0${differenceInDays}D 0${differenceInHours}H 0${differenceInMinutes}M`;
+  if (differenceInDays === 0 && differenceInHours === 0) {
+    differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+    differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+    differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+    difference = `${differenceInMinutes}M`;
+  } else if (differenceInDays === 0) {
+    differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+    differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+    differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+    difference = `${differenceInHours}H ${differenceInMinutes}M`;
   } else {
-    difference = `0${differenceInDays}D 0${differenceInHours}H ${differenceInMinutes}M`;
+    differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+    differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+    differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+    difference = `${differenceInDays}D ${differenceInHours}H ${differenceInMinutes}M`;
   }
 
   return difference;
@@ -161,6 +170,9 @@ export const generateTrip = () => {
     destination: generateDestination(),
     startDate: generateDate(daysGapStart, hoursGapStart, minutesGapStart),
     endDate: generateDate(daysGapEnd, hoursGapEnd, minutesGapEnd),
+    get durationInMs() {
+      return generateDurationInMs(this.startDate, this.endDate);
+    },
     get duration() {
       return generateDuration(this.startDate, this.endDate);
     },
@@ -193,4 +205,3 @@ export const generateTrip = () => {
     },
   };
 };
-// Commentary
