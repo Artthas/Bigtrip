@@ -1,13 +1,12 @@
 import TripEditView from '../view/trip-edit.js';
-import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/const.js';
-import { generateTrip } from '../mock/trip.js';
 
 export default class TripNew {
-  constructor(tripEventsContainer, changeData) {
+  constructor(tripEventsContainer, changeData, dataModel) {
     this._tripEventsContainer = tripEventsContainer;
     this._changeData = changeData;
+    this._dataModel = dataModel,
 
     this._tripEditComponent = null;
 
@@ -21,12 +20,11 @@ export default class TripNew {
       return;
     }
     this._btn = btn;
-    this._tripEditComponent = new TripEditView(generateTrip());
+    this._tripEditComponent = new TripEditView(this._dataModel.getDestinations(), this._dataModel.getOffers());
     this._tripEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._tripEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     render(this._tripEventsContainer, this._tripEditComponent, RenderPosition.AFTERBEGIN);
-
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
@@ -35,20 +33,37 @@ export default class TripNew {
       return;
     }
 
-    this._btn.removeAttribute('disabled', 'disabled');
     remove(this._tripEditComponent);
     this._tripEditComponent = null;
-
+    this._btn.getElement().removeAttribute('disabled', 'disabled');
     document.removeEventListener('keydown', this._escKeyDownHandler);
+  }
+
+  setSaving() {
+    this._tripEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._tripEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._tripEditComponent.shake(resetFormState);
   }
 
   _handleFormSubmit(trip) {
     this._changeData(
       UserAction.ADD_TRIP,
       UpdateType.MINOR,
-      Object.assign({id: nanoid()}, trip),
+      trip,
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {

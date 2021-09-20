@@ -13,6 +13,11 @@ const createTripInfo = (trips) => {
 
   for (const element of trips) {
     total += element.price;
+    for (const offer of element.offers) {
+      if (offer.isChecked) {
+        total += offer.price;
+      }
+    }
   }
 
   return `<section class="trip-main__trip-info  trip-info">

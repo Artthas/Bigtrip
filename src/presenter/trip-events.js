@@ -2,9 +2,9 @@ import TripEventsView from '../view/trip-events.js';
 import TripSortView from '../view/trip-sort.js';
 import TripEventsListView from '../view/trip-events-list.js';
 import NoPointView from '../view/no-point.js';
-import TripCreateView from '../view/trip-create.js';
 import TripInfoView from '../view/trip-info.js';
-import TripPointPresenter from './trip-point.js';
+import LoadingView from '../view/loading.js';
+import TripPointPresenter, {State as TripPointPresenterViewState} from './trip-point.js';
 import TripNewPresenter from './trip-new.js';
 import { tripMainComponent } from '../main.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
@@ -13,13 +13,18 @@ import { SortType, UpdateType, UserAction, FilterType } from '../utils/const.js'
 import { filter } from '../utils/filter.js';
 
 export default class TripEvents {
-  constructor(tripEventsContainer, tripsModel, filterModel) {
+  constructor(tripEventsContainer, tripsModel, dataModel, filterModel, api) {
     this._tripEventsContainer = tripEventsContainer;
     this._tripsModel = tripsModel;
+    this._dataModel = dataModel,
     this._filterModel = filterModel;
     this._tripPointPresenter = new Map();
     this._filterType = FilterType.EVERYTHING;
     this._currentSortType = SortType.DAY;
+    this._isLoading = true;
+    this._api = api;
+
+    this._api.getData();
 
     this._tripSortComponent = null;
     this._tripInfoComponent = null;
@@ -28,18 +33,17 @@ export default class TripEvents {
     this._tripEventsComponent = new TripEventsView();
     this._tripEventsListComponent = new TripEventsListView();
     this._tripMainComponent = tripMainComponent;
+    this._loadingComponent = new LoadingView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handleModeChange = this._handleModelChange.bind(this);
+    this._handleModelChange = this._handleModelChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    this._tripNewPresenter = new TripNewPresenter(this._tripEventsListComponent, this._handleViewAction);
+    this._tripNewPresenter = new TripNewPresenter(this._tripEventsListComponent, this._handleViewAction, this._dataModel);
   }
 
   init() {
-    this._tripsModel.getTrips().slice().sort(sortByDay);
-
     render(this._tripEventsContainer, this._tripEventsComponent, RenderPosition.AFTERBEGIN);
     render(this._tripEventsComponent, this._tripEventsListComponent, RenderPosition.BEFOREEND);
 
@@ -68,7 +72,7 @@ export default class TripEvents {
   }
 
   createTrip(btn) {
-    btn.setAttribute('disabled', 'disabled');
+    btn.getElement().setAttribute('disabled', 'disabled');
     this._currentSortType = SortType.DAY;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._tripNewPresenter.init(btn);
@@ -118,13 +122,34 @@ export default class TripEvents {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TRIP:
-        this._tripsModel.updateTrip(updateType, update);
+        this._tripPointPresenter.get(update.id).setViewState(TripPointPresenterViewState.SAVING);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._tripsModel.updateTrip(updateType, response);
+          })
+          .catch(() => {
+            this._tripPointPresenter.get(update.id).setViewState(TripPointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_TRIP:
-        this._tripsModel.addTrip(updateType, update);
+        this._tripNewPresenter.setSaving();
+        this._api.addPoint(update)
+          .then((response) => {
+            this._tripsModel.addTrip(updateType, response);
+          })
+          .catch(() => {
+            this._tripNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_TRIP:
-        this._tripsModel.deleteTrip(updateType, update);
+        this._tripPointPresenter.get(update.id).setViewState(TripPointPresenterViewState.DELETING);
+        this._api.deletePoint(update)
+          .then(() => {
+            this._tripsModel.deleteTrip(updateType, update);
+          })
+          .catch(() => {
+            this._tripPointPresenter.get(update.id).setViewState(TripPointPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -140,6 +165,11 @@ export default class TripEvents {
         break;
       case UpdateType.MAJOR:
         this._clearTripEvents({resetSortType: true});
+        this._renderTripEvents();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderTripEvents();
         break;
     }
@@ -176,18 +206,18 @@ export default class TripEvents {
     render(this._tripEventsComponent, this._tripSortComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderTripCreate() {
-    render(this._tripEventsListComponent, new TripCreateView(this._getTrips()[0]), RenderPosition.BEFOREEND);
-  }
-
   _renderTripPoint(trip) {
-    const tripPointPresenter = new TripPointPresenter(this._tripEventsListComponent, this._handleViewAction, this._handleModelChange);
-    tripPointPresenter.init(trip);
+    const tripPointPresenter = new TripPointPresenter(this._tripEventsListComponent, this._handleViewAction, this._handleModelChange, this._dataModel);
+    tripPointPresenter.init(this._dataModel, trip);
     this._tripPointPresenter.set(trip.id, tripPointPresenter);
   }
 
   _renderTripPoints(trips) {
     trips.forEach((trip) => this._renderTripPoint(trip));
+  }
+
+  _renderLoading() {
+    render(this._tripEventsComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderNoPoints() {
@@ -196,6 +226,10 @@ export default class TripEvents {
   }
 
   _renderTripEvents() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const trips = this._getTrips();
     if (trips === undefined) {
       return;
@@ -218,6 +252,7 @@ export default class TripEvents {
 
     remove(this._tripInfoComponent);
     remove(this._tripSortComponent);
+    remove(this._loadingComponent);
 
     if (this._noPointComponent) {
       remove(this._noPointComponent);

@@ -194,7 +194,7 @@ const renderTimeChart = (timeCtx, trips) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 80,
+          minBarLength: 90,
         }],
       },
       legend: {
@@ -228,7 +228,6 @@ const createStatsTemplate = () => (
 export default class Stats extends SmartView {
   constructor(trips) {
     super();
-
     this._data = trips;
 
     this._moneyChart = null;

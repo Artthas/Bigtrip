@@ -4,11 +4,11 @@ import AbstractView from './abstract.js';
 const createTripEditOffers = (offers) => {
   const offersElements = offers !== null ? offers
     .map((item) => {
-      if (item.isChecked === 'checked') {
+      if (item.isChecked) {
         return `<li class="event__offer">
-                  <span class="event__offer-title">${Object.keys(item)[0]}</span>
+                  <span class="event__offer-title">${item.title}</span>
                     &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${Object.values(item)[0]}</span>
+                  <span class="event__offer-price">${item.price}</span>
                 </li>`;
       }
     })
@@ -17,7 +17,40 @@ const createTripEditOffers = (offers) => {
 };
 
 const createTripPoint = (trip) => {
-  const {type, destination, startDate, endDate, duration, price, offers, isFavorite} = trip;
+  const {type, destinationTitle, startDate, endDate, price, offers, isFavorite} = trip;
+
+  const generateDuration = (firstDate, secondDate) => {
+
+    let differenceInDays = parseInt((secondDate - firstDate) / 86400000, 10);
+    let differenceInHours = parseInt((secondDate - firstDate) / 3600000, 10);
+    let differenceInMinutes = parseInt((secondDate - firstDate) / 60000, 10) - differenceInHours * 60;
+    let difference = '';
+
+    if (differenceInDays > 0) {
+      differenceInHours = differenceInHours - differenceInDays * 24;
+    }
+
+    if (differenceInDays === 0 && differenceInHours === 0) {
+      differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+      differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+      differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+      difference = `${differenceInMinutes}M`;
+    } else if (differenceInDays === 0) {
+      differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+      differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+      differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+      difference = `${differenceInHours}H ${differenceInMinutes}M`;
+    } else {
+      differenceInDays.toString().length === 1 ? differenceInDays = `0${differenceInDays}` : '';
+      differenceInHours.toString().length === 1 ? differenceInHours = `0${differenceInHours}` : '';
+      differenceInMinutes.toString().length === 1 ? differenceInMinutes = `0${differenceInMinutes}` : '';
+      difference = `${differenceInDays}D ${differenceInHours}H ${differenceInMinutes}M`;
+    }
+
+    return difference;
+  };
+
+  const duration = generateDuration(startDate, endDate);
 
   const favorite = (isFavorite) ? 'event__favorite-btn--active' : '';
 
@@ -26,9 +59,9 @@ const createTripPoint = (trip) => {
   return `<div class="event">
     <time class="event__date" datetime="2019-03-20">${dayjs(startDate).format('MMM D')}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/${Object.keys(type).find((key) => type[key] === 'checked').toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${Object.keys(type).find((key) => type[key] === 'checked')} ${destination}</h3>
+    <h3 class="event__title">${type} ${destinationTitle}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-20T08:25">${dayjs(startDate).format('HH:mm')}</time>
@@ -74,7 +107,7 @@ export default class TripPoint extends AbstractView {
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(this._trip);
   }
 
   setTripPointClickHandler(callback) {

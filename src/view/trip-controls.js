@@ -10,4 +10,3 @@ export default class TripControls extends AbstractView {
     return createTripControls();
   }
 }
-
