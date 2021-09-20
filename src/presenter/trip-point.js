@@ -8,11 +8,18 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class TripPoint {
-  constructor(tripEventsListContainer, changeData, changeMode) {
+  constructor(tripEventsListContainer, changeData, changeMode, dataModel) {
     this._tripEventsListContainer = tripEventsListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._dataModel = dataModel;
 
     this._tripPointComponent = null;
     this._tripEditComponent = null;
@@ -26,14 +33,15 @@ export default class TripPoint {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(tripPoint) {
+  init(dataModel, tripPoint) {
     this._tripPoint = tripPoint;
+    this._dataModel = dataModel;
 
     const prevTripPointComponent = this._tripPointComponent;
     const prevTripEditComponent = this._tripEditComponent;
 
     this._tripPointComponent = new TripPointView(tripPoint);
-    this._tripEditComponent = new TripEditView(tripPoint);
+    this._tripEditComponent = new TripEditView(this._dataModel.getDestinations(), this._dataModel.getOffers(), tripPoint);
 
     this._tripPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._tripPointComponent.setTripPointClickHandler(this._handleTripPointClick);
@@ -51,7 +59,8 @@ export default class TripPoint {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._tripEditComponent, prevTripEditComponent);
+      replace(this._tripPointComponent, prevTripEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevTripPointComponent);
@@ -69,14 +78,48 @@ export default class TripPoint {
     }
   }
 
+  setViewState(state) {
+    if (this._mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this._tripEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._tripEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._tripEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this._tripPointComponent.shake(resetFormState);
+        this._tripEditComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   _replaceCardToForm() {
     replace(this._tripEditComponent, this._tripPointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
-    this._tripEditComponent.reset(this._tripPoint);
+    this._changeMode();
     this._mode = Mode.EDITING;
   }
 
   _replaceFormToCard() {
+    this._tripEditComponent.reset(this._tripPoint);
     replace(this._tripPointComponent, this._tripEditComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
@@ -90,13 +133,13 @@ export default class TripPoint {
     }
   }
 
-  _handleFavoriteClick() {
+  _handleFavoriteClick(trip) {
     this._changeData(
       UserAction.UPDATE_TRIP,
       UpdateType.MINOR,
       Object.assign(
         {},
-        this._tripPoint,
+        trip,
         {
           isFavorite: !this._tripPoint.isFavorite,
         },
@@ -110,7 +153,6 @@ export default class TripPoint {
       UpdateType.MINOR,
       trip,
     );
-    this._replaceFormToCard();
   }
 
   _handleDeleteClick(trip) {

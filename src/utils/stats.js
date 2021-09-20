@@ -18,7 +18,7 @@ const countPricesByType = (trips, types) => {
   };
   for (const type of types) {
     trips.map((trip) => {
-      if (Object.keys(trip.type).find((key) => trip.type[key] === 'checked').toUpperCase() === type) {
+      if (trip.type.toUpperCase() === type) {
         pricesByTypes[type] += trip.price;
       }
     });
@@ -40,7 +40,7 @@ const countTypes = (trips, types) => {
   };
   for (const type of types) {
     trips.map((trip) => {
-      if (Object.keys(trip.type).find((key) => trip.type[key] === 'checked').toUpperCase() === type) {
+      if (trip.type.toUpperCase() === type) {
         countTypesNumber[type] += 1;
       }
     });
@@ -91,8 +91,8 @@ const countTimeSpendInMs = (trips, types) => {
   };
   for (const type of types) {
     trips.map((trip) => {
-      if (Object.keys(trip.type).find((key) => trip.type[key] === 'checked').toUpperCase() === type) {
-        countTypesInMs[type] += trip.durationInMs;
+      if (trip.type.toUpperCase() === type) {
+        countTypesInMs[type] += dayjs(trip.endDate).diff(dayjs(trip.startDate));
       }
     });
   }
