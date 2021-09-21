@@ -1,6 +1,7 @@
 import TripEditView from '../view/trip-edit.js';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/const.js';
+import {isEscEvent} from '../utils/common.js';
 
 export default class TripNew {
   constructor(tripEventsContainer, changeData, dataModel) {
@@ -71,7 +72,7 @@ export default class TripNew {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscEvent(evt)) {
       evt.preventDefault();
       this.destroy();
     }

@@ -2,6 +2,7 @@ import TripPointView from '../view/trip-point.js';
 import TripEditView from '../view/trip-edit.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { UserAction, UpdateType } from '../utils/const.js';
+import {isEscEvent} from '../utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -126,7 +127,7 @@ export default class TripPoint {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscEvent(evt)) {
       evt.preventDefault();
       this._tripEditComponent.reset(this._tripPoint);
       this._replaceFormToCard();

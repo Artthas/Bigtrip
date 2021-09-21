@@ -246,11 +246,7 @@ export default class TripEdit extends SmartView {
     const newOffers = this._data.offers.map((offer) => Object.assign({}, offer));
     newOffers.map((offer) => {
       if (`event-offer-${offer.title.split(' ').join('-').toLowerCase()}-${this._data.id}` === evt.target.getAttribute('for') || offer.title === evt.target.innerText) {
-        if (offer.isChecked) {
-          offer.isChecked = false;
-        } else {
-          offer.isChecked = true;
-        }
+        offer.isChecked = !offer.isChecked;
       }
     });
     this.updateData(
